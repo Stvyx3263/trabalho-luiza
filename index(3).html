@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<meta name="theme-color" content="#050505">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<title>Robô Interativo</title>
+
+<style>
+
+:root {
+    --eye-white: #f0faff;
+    --dark-bg: #050505;
+    --glow-soft: rgba(240,250,255,0.15);
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: var(--dark-bg);
+
+    overflow: hidden;
+
+    touch-action: manipulation;
+
+    overscroll-behavior: none;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+}
+
+body {
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100dvh;
+
+}
+
+
+/* =========================================
+   ORIENTAÇÃO
+========================================= */
+
+#orientation-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: #000;
+
+    color: white;
+
+    z-index: 99999;
+
+    display: none;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+
+    font-family: Arial,sans-serif;
+
+}
+
+#orientation-overlay div {
+
+    font-size: 50px;
+
+}
+
+#orientation-overlay p {
+
+    font-size: 18px;
+
+}
+
+@media (orientation:portrait) {
+
+    #orientation-overlay {
+
+        display:flex;
+
+    }
+
+}
+
+
+/* =========================================
+   ROSTO
+========================================= */
+
+.face-container {
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    width:100vw;
+
+    height:100vh;
+
+    animation:float 5s ease-in-out infinite;
+
+}
+
+@keyframes float {
+
+    0%,100% {
+
+        transform:translateY(0);
+
+    }
+
+    50% {
+
+        transform:translateY(-12px);
+
+    }
+
+}
+
+
+/* =========================================
+   OLHOS
+========================================= */
+
+.eyes-row {
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:clamp(60px,11vw,160px);
+
+    width:100vw;
+
+}
+
+
+.eye {
+
+    width:clamp(170px,22vw,330px);
+
+    height:clamp(150px,20vw,290px);
+
+    background:var(--eye-white);
+
+    border-radius:80px;
+
+    box-shadow:
+
+        0 0 30px var(--glow-soft),
+
+        0 0 70px rgba(240,250,255,0.07);
+
+    transition:
+
+        all .4s cubic-bezier(
+            .175,
+            .885,
+            .32,
+            1.275
+        );
+
+}
+
+
+/* =========================================
+   EXPRESSÃO DORMINDO
+========================================= */
+
+.sleeping .eye {
+
+    width:clamp(140px,18vw,260px);
+
+    height:8px;
+
+    opacity:.2;
+
+    border-radius:4px;
+
+}
+
+
+/* =========================================
+   EXPRESSÃO FELIZ
+========================================= */
+
+.happy .eye {
+
+    height:clamp(70px,10vw,130px);
+
+    background:transparent;
+
+    border-top:
+
+        clamp(18px,2.5vw,30px)
+
+        solid var(--eye-white);
+
+    border-radius:
+
+        100px 100px 0 0;
+
+    box-shadow:none;
+
+    transform:translateY(25px);
+
+}
+
+
+/* =========================================
+   EXPRESSÃO PENSANDO
+========================================= */
+
+.thinking #eye-l {
+
+    width:clamp(170px,22vw,330px);
+
+    height:clamp(150px,20vw,290px);
+
+}
+
+.thinking #eye-r {
+
+    width:clamp(170px,22vw,330px);
+
+    height:clamp(100px,15vw,210px);
+
+}
+
+
+/* =========================================
+   EXPRESSÃO RINDO
+========================================= */
+
+.laughing .eye {
+
+    width:clamp(170px,22vw,330px);
+
+    height:clamp(40px,6vw,75px);
+
+    transform:skewX(10deg);
+
+}
+
+
+/* =========================================
+   PISCADA
+========================================= */
+
+.blink .eye {
+
+    transform:scaleY(0)!important;
+
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (orientation:landscape) {
+
+    .eye {
+
+        width:22vw;
+
+        height:20vw;
+
+        max-width:330px;
+
+        max-height:290px;
+
+    }
+
+}
+
+
+@media (max-height:500px) and (orientation:landscape) {
+
+    .eye {
+
+        width:20vw;
+
+        height:17vw;
+
+        max-width:270px;
+
+        max-height:225px;
+
+    }
+
+    .eyes-row {
+
+        gap:10vw;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body class="sleeping">
+
+
+<div id="orientation-overlay">
+
+    <div>📱🔄</div>
+
+    <p>
+        Gire o dispositivo para deitado.
+    </p>
+
+</div>
+
+
+<div class="face-container">
+
+    <div class="eyes-row">
+
+        <div id="eye-l" class="eye"></div>
+
+        <div id="eye-r" class="eye"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* =========================================
+   VARIÁVEIS
+========================================= */
+
+const body=document.body;
+
+let recognitionActive=false;
+
+let robotSpeaking=false;
+
+let step=2;
+
+let userName="";
+
+let wakeLock=null;
+
+let voices=[];
+
+let audioCtx=null;
+
+
+/* =========================================
+   GERADOR DE SONS ROBÓTICOS (WEB AUDIO)
+========================================= */
+
+function inicializarAudioContext() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function tocarSomRobotico(tipo) {
+    try {
+        inicializarAudioContext();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+
+        if (tipo === 'bip') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
+
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.15);
+        } 
+        else if (tipo === 'processando') {
+            for (let i = 0; i < 3; i++) {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(600 + (i * 300), now + (i * 0.08));
+
+                gain.gain.setValueAtTime(0.08, now + (i * 0.08));
+                gain.gain.exponentialRampToValueAtTime(0.001, now + (i * 0.08) + 0.07);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(now + (i * 0.08));
+                osc.stop(now + (i * 0.08) + 0.07);
+            }
+        }
+    } catch(e) {
+        console.log("Erro ao gerar áudio:", e);
+    }
+}
+
+
+/* =========================================
+   RECONHECIMENTO
+========================================= */
+
+const SpeechRecognition=
+
+    window.SpeechRecognition ||
+
+    window.webkitSpeechRecognition;
+
+
+const recognition=
+
+    SpeechRecognition
+        ? new SpeechRecognition()
+        : null;
+
+
+if(recognition){
+
+    recognition.lang="pt-BR";
+
+    recognition.continuous=false;
+
+    recognition.interimResults=false;
+
+    recognition.maxAlternatives=1;
+
+}
+
+
+/* =========================================
+   VOZES
+========================================= */
+
+function carregarVozes(){
+
+    voices=
+        window.speechSynthesis.getVoices();
+
+}
+
+carregarVozes();
+
+
+if("onvoiceschanged" in window.speechSynthesis){
+
+    window.speechSynthesis.onvoiceschanged=
+        carregarVozes;
+
+}
+
+
+/* =========================================
+   ESCOLHER VOZ DE ALTA QUALIDADE
+========================================= */
+
+function encontrarMelhorVoz(){
+
+    if(!voices.length){
+
+        carregarVozes();
+
+    }
+
+    const preferidos = [
+        "google português do brasil",
+        "luciana",
+        "felipe",
+        "daniel",
+        "ricardo"
+    ];
+
+    let voz = voices.find(v => {
+        const name = v.name.toLowerCase();
+        const lang = v.lang.toLowerCase();
+        return (lang === "pt-br" || lang.startsWith("pt-br")) && preferidos.some(p => name.includes(p));
+    });
+
+    if(!voz){
+        voz = voices.find(v => v.lang.toLowerCase().startsWith("pt-br"));
+    }
+
+    if(!voz){
+        voz = voices.find(v => v.lang.toLowerCase().startsWith("pt"));
+    }
+
+    return voz || null;
+
+}
+
+
+/* =========================================
+   WAKE LOCK
+========================================= */
+
+async function manterTelaAcesa(){
+
+    try{
+
+        if("wakeLock" in navigator){
+
+            if(
+                wakeLock &&
+                !wakeLock.released
+            ){
+
+                return;
+
+            }
+
+
+            wakeLock=
+
+                await navigator
+                    .wakeLock
+                    .request("screen");
+
+
+            console.log(
+                "Tela mantida acesa."
+            );
+
+        }
+
+    }
+
+    catch(e){
+
+        console.log(
+            "Wake Lock não disponível:",
+            e
+        );
+
+    }
+
+}
+
+
+document.addEventListener(
+    "visibilitychange",
+    ()=>{
+
+        if(
+            document.visibilityState===
+            "visible"
+        ){
+
+            manterTelaAcesa();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   FALAR — COM SONS ROBÓTICOS
+========================================= */
+
+function falar(texto,callback){
+
+    robotSpeaking=true;
+
+    /* Toca um bip de processamento robótico antes de começar a falar */
+    tocarSomRobotico('bip');
+
+    if(
+        recognition &&
+        recognitionActive
+    ){
+
+        try{
+
+            recognition.stop();
+
+        }catch(e){}
+
+    }
+
+
+    window.speechSynthesis.cancel();
+
+
+    const msg=
+        new SpeechSynthesisUtterance(texto);
+
+
+    msg.lang="pt-BR";
+
+
+    /* Pitch natural e limpo para evitar distorção vocal no mobile */
+    msg.pitch=0.6;
+
+
+    /* Velocidade adaptada para soar computacional, sem embolar */
+    msg.rate=0.9;
+
+
+    msg.volume=1;
+
+
+    const voz=
+        encontrarMelhorVoz();
+
+
+    if(voz){
+
+        msg.voice=voz;
+
+    }
+
+
+    msg.onstart=()=>{
+
+        robotSpeaking=true;
+
+    };
+
+
+    msg.onend=()=>{
+
+        robotSpeaking=false;
+
+
+        setTimeout(()=>{
+
+            if(
+                recognition &&
+                recognitionActive
+            ){
+
+                try{
+
+                    recognition.start();
+
+                }catch(e){}
+
+            }
+
+        },500);
+
+
+        if(callback){
+
+            callback();
+
+        }
+
+    };
+
+
+    msg.onerror=()=>{
+
+        robotSpeaking=false;
+
+    };
+
+
+    /* Pequeno retardo para o bip inicial tocar limpo */
+    setTimeout(() => {
+        window.speechSynthesis.speak(msg);
+    }, 150);
+
+}
+
+
+/* =========================================
+   PIADA
+========================================= */
+
+function contarPiada(){
+
+    body.className="awake";
+
+
+    falar(
+
+        "Sabe por que o robô foi ao médico? Porque ele estava com um vírus! Rá! Rá! Rá! Rá!",
+
+        ()=>{
+
+            body.className="laughing";
+            tocarSomRobotico('processando');
+
+
+            setTimeout(()=>{
+
+                body.className="awake";
+
+
+                falar(
+
+                    "O papo está bom, mas minha bateria está acabando, então vou indo, tchau tchau",
+
+                    ()=>{
+
+                        body.className="sleeping";
+
+                        recognitionActive=false;
+
+
+                        if(recognition){
+
+                            try{
+
+                                recognition.stop();
+
+                            }catch(e){}
+
+                        }
+
+                    }
+
+                );
+
+            },2000);
+
+        }
+
+    );
+
+}
+
+
+/* =========================================
+   PISCAR
+========================================= */
+
+setInterval(()=>{
+
+    if(
+        !body.classList.contains("sleeping")
+    ){
+
+        body.classList.add("blink");
+
+
+        setTimeout(()=>{
+
+            body.classList.remove("blink");
+
+        },150);
+
+    }
+
+},4000);
+
+
+/* =========================================
+   ACORDAR
+========================================= */
+
+function acordarRobo(){
+
+    manterTelaAcesa();
+    inicializarAudioContext();
+
+
+    if(
+        !recognitionActive &&
+        recognition
+    ){
+
+        body.className="awake";
+
+        recognitionActive=true;
+
+
+        try{
+
+            recognition.start();
+
+
+            falar(
+
+                "Olá! Eu sou o robozinho. Qual o seu nome?",
+
+                ()=>{
+
+                    step=2;
+
+                }
+
+            );
+
+        }
+
+        catch(error){
+
+            console.log(error);
+
+            recognitionActive=false;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================
+   TOQUE
+========================================= */
+
+window.addEventListener(
+    "click",
+    acordarRobo
+);
+
+
+/* =========================================
+   SEGUNDA PARTE DO DIÁLOGO
+========================================= */
+
+function irParaSegundaParte(){
+
+    step=3;
+
+    body.className="awake";
+
+    falar(
+
+        "Ei! Você sabe porque o curso técnico em Desenvolvimento de Sistemas é o melhor curso que você pode escolher? É um curso que trabalha principalmente o raciocinio lógico, ajudando seu desempenho em diferentes disciplinas. Além de outros beneficios",
+
+        ()=>{
+
+            setTimeout(()=>{
+
+                irParaTerceiraParte();
+
+            },1500);
+
+        }
+
+    );
+
+}
+
+
+/* =========================================
+   TERCEIRA PARTE DO DIÁLOGO
+========================================= */
+
+function irParaTerceiraParte(){
+
+    step="decisao_piada";
+
+    body.className="awake";
+
+    falar(
+
+        "E você aprende a criar projetos legais como eu... quer ouvir uma piada?"
+
+    );
+
+}
+
+
+/* =========================================
+   EXTRAÇÃO DE NOME REAL
+========================================= */
+
+function extrairNome(fala) {
+    let limpo = fala.toLowerCase()
+        .replace(/meu nome é/g, '')
+        .replace(/me chamo/g, '')
+        .replace(/eu sou o/g, '')
+        .replace(/eu sou a/g, '')
+        .replace(/eu sou/g, '')
+        .replace(/sou o/g, '')
+        .replace(/sou a/g, '')
+        .replace(/oi/g, '')
+        .replace(/olá/g, '')
+        .trim();
+
+    if (!limpo) return "";
+
+    let partes = limpo.split(" ");
+    let primeiroNome = partes[0];
+
+    return primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1);
+}
+
+
+/* =========================================
+   RECONHECIMENTO
+========================================= */
+
+if(recognition){
+
+    recognition.onresult=(event)=>{
+
+        if(robotSpeaking){
+
+            return;
+
+        }
+
+
+        const last=
+            event.results.length-1;
+
+
+        const fala=
+            event.results[last][0]
+                .transcript
+                .toLowerCase()
+                .trim();
+
+
+        console.log(
+            "Usuário:",
+            fala
+        );
+
+
+        /* =====================================
+           PRIMEIRA PARTE (NOME)
+        ===================================== */
+
+        if(step===2){
+
+            tocarSomRobotico('processando');
+
+            userName = extrairNome(fala);
+
+            if(
+                fala.includes("edicarmen") ||
+                fala.includes("edcarmen")
+            ){
+
+                falar(
+
+                    "Busquei aqui no meu banco de dados vi que Edcarmen é coordenadora da escola Amácio Mazzaroppi",
+
+                    ()=>{
+
+                        irParaSegundaParte();
+
+                    }
+
+                );
+
+            }
+
+
+            else if(
+                fala.includes("rafael")
+            ){
+
+                body.className="thinking";
+
+                falar(
+
+                    "Busquei aqui no meu banco de dados e vi que existe Rafael aluno, Rafael professor e Rafael coordenador. Qual você é?",
+
+                    ()=>{
+
+                        step="rafael_check";
+
+                    }
+
+                );
+
+            }
+
+
+            else if(
+                fala.includes("lara")
+            ){
+
+                falar(
+
+                    "Hi Teacher, nice to meet you!",
+
+                    ()=>{
+
+                        irParaSegundaParte();
+
+                    }
+
+                );
+
+            }
+
+
+            else{
+
+                let mensagemNome = userName 
+                    ? `legal te conhecer, ${userName}! Eu sou um protótipo de um projeto educacional` 
+                    : "legal te conhecer! Eu sou um protótipo de um projeto educacional";
+
+                falar(
+
+                    mensagemNome,
+
+                    ()=>{
+
+                        irParaSegundaParte();
+
+                    }
+
+                );
+
+            }
+
+        }
+
+
+        /* =====================================
+           RAFAEL CHECK
+        ===================================== */
+
+        else if(
+            step==="rafael_check"
+        ){
+
+            tocarSomRobotico('processando');
+
+            if(
+                fala.includes("professor")
+            ){
+
+                falar(
+
+                    "Eai meu",
+
+                    ()=>{
+
+                        irParaSegundaParte();
+
+                    }
+
+                );
+
+            }
+
+            else if(
+                fala.includes("coordenador") ||
+                fala.includes("aluno")
+            ){
+
+                falar(
+
+                    "legal te conhecer",
+
+                    ()=>{
+
+                        irParaSegundaParte();
+
+                    }
+
+                );
+
+            }
+
+            else{
+
+                falar(
+
+                    "legal te conhecer",
+
+                    ()=>{
+
+                        irParaSegundaParte();
+
+                    }
+
+                );
+
+            }
+
+        }
+
+
+        /* =====================================
+           TERCEIRA PARTE (PIADA)
+        ===================================== */
+
+        else if(
+            step==="decisao_piada"
+        ){
+
+            tocarSomRobotico('processando');
+
+            if(
+                fala.includes("sim") ||
+                fala.includes("quero") ||
+                fala.includes("pode")
+            ){
+
+                contarPiada();
+
+            }
+
+            else if(
+                fala.includes("não") ||
+                fala.includes("nao")
+            ){
+
+                falar(
+
+                    "vou contar mesmo assim",
+
+                    ()=>{
+
+                        contarPiada();
+
+                    }
+
+                );
+
+            }
+
+        }
+
+    };
+
+
+    /* =========================================
+       MICROFONE TERMINOU
+    ========================================= */
+
+    recognition.onend=()=>{
+
+        if(
+            recognitionActive &&
+            !robotSpeaking
+        ){
+
+            setTimeout(()=>{
+
+                try{
+
+                    recognition.start();
+
+                }catch(e){}
+
+            },300);
+
+        }
+
+    };
+
+
+    recognition.onerror=(event)=>{
+
+        console.log(
+            "Erro:",
+            event.error
+        );
+
+    };
+
+}
+
+
+/* =========================================
+   TELA CHEIA
+========================================= */
+
+async function entrarTelaCheia(){
+
+    try{
+
+        if(
+            document.documentElement.requestFullscreen &&
+            !document.fullscreenElement
+        ){
+
+            await document
+                .documentElement
+                .requestFullscreen();
+
+        }
+
+    }catch(e){
+
+        console.log(
+            "Tela cheia não disponível."
+        );
+
+    }
+
+}
+
+
+window.addEventListener(
+    "click",
+    ()=>{
+
+        manterTelaAcesa();
+
+        entrarTelaCheia();
+
+        inicializarAudioContext();
+
+    },
+    {once:true}
+);
+
+
+/* =========================================
+   BLOQUEAR ZOOM
+========================================= */
+
+document.addEventListener(
+    "gesturestart",
+    e=>e.preventDefault()
+);
+
+document.addEventListener(
+    "gesturechange",
+    e=>e.preventDefault()
+);
+
+document.addEventListener(
+    "gestureend",
+    e=>e.preventDefault()
+);
+
+</script>
+
+</body>
+</html>
